@@ -7,6 +7,8 @@ import CartContext from "../../store/cart-context";
 const HeaderCartButton = ({ onClickCart }) => {
   const { items } = useContext(CartContext);
 
+  console.log();
+
   const cartItemNumber = items.reduce((curr, item) => {
     return curr + item.amount;
   }, 0);

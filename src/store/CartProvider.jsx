@@ -9,7 +9,7 @@ const defaultCartItems = {
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "ADD_ITEMS":
-      const updatedItems = state.items.concat(action.items),
+      const updatedItems = state.items.concat(action.payload),
         updatedTotalAmount =
           state.totalAmount + action.payload.price * action.payload.amount;
       return {
@@ -42,7 +42,7 @@ const CartProvider = ({ children }) => {
     dispatchCart({ type: "REMOVE_ITEMS", payload: id });
   };
 
-  console.log(cartState);
+  console.table(cartState);
 
   const value = {
     items: cartState.items,
