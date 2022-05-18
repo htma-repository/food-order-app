@@ -13,7 +13,7 @@ const DUMMY_MEALS = [
   },
   {
     id: "m3",
-    name: "Barbecue Burger",
+    name: "Barbecue",
     description: "American, raw, meaty",
     price: 12.99,
   },
@@ -22,6 +22,12 @@ const DUMMY_MEALS = [
     name: "Green Bowl",
     description: "Healthy...and green...",
     price: 18.99,
+  },
+  {
+    id: "m5",
+    name: "Pizza",
+    description: "Italian Pizza",
+    price: 24.99,
   },
 ];
 

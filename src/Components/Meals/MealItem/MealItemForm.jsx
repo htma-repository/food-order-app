@@ -3,23 +3,24 @@ import Input from "../../UI/Input";
 import Button from "../../UI/Button";
 
 const MealItemForm = ({ id, onAddAmountToCart }) => {
-  const [cartIsValid, setCartIsValid] = useState(true);
+  const [cartIsValid, setCartIsValid] = useState(false);
   const amountInputRef = useRef();
 
   const cartSubmitHandler = (e) => {
     e.preventDefault();
-    console.log("click");
-    const enteredAmount = amountInputRef.current.value;
+
+    let enteredAmount = amountInputRef.current.value;
     const enteredAmountToNumber = +enteredAmount;
     if (
       enteredAmount.trim().length === 0 ||
       enteredAmountToNumber < 1 ||
       enteredAmountToNumber > 10
     ) {
-      return setCartIsValid(false);
+      return setCartIsValid(true);
     }
 
     onAddAmountToCart(enteredAmountToNumber);
+    amountInputRef.current.value = "";
   };
 
   return (
@@ -48,10 +49,8 @@ const MealItemForm = ({ id, onAddAmountToCart }) => {
         >
           + Add
         </Button>
-        {!cartIsValid && (
-          <p className="text-sm uppercase text-red-600">
-            Please input valid Amount 1-10
-          </p>
+        {cartIsValid && (
+          <p className="text-xs text-red-600">Please input valid Amount 1-10</p>
         )}
       </form>
     </Fragment>

@@ -3,28 +3,66 @@ import CartContext from "./cart-context";
 
 const defaultCartItems = {
   items: [],
-  totalAmount: 0,
+  totalPriceAmount: 0,
 };
 
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "ADD_ITEMS":
-      const updatedItems = state.items.concat(action.payload),
-        updatedTotalAmount =
-          state.totalAmount + action.payload.price * action.payload.amount;
+      // Update property totalAmount
+      const updatedTotalPriceAmount =
+        state.totalPriceAmount + action.payload.price * action.payload.amount;
+
+      // Search index from state item === payload id
+      const existingCartItemIndex = state.items.findIndex((item) => {
+        // return number of index value (0-n) from array of object state.items
+        return item.id === action.payload.id;
+      });
+
+      // property items is array of object, search index of items from existingCartItemIndex
+      const existingCartItem = state.items[existingCartItemIndex];
+
+      let updatedItems = null;
+
+      if (existingCartItem) {
+        const updatedItem = {
+          ...existingCartItem,
+          amount: existingCartItem.amount + action.payload.amount,
+        };
+        updatedItems = [...state.items];
+        console.log(updatedItems);
+        updatedItems[existingCartItemIndex] = updatedItem;
+      } else {
+        updatedItems = state.items.concat(action.payload);
+      }
       return {
         items: updatedItems,
-        totalAmount: updatedTotalAmount,
+        totalPriceAmount: updatedTotalPriceAmount,
       };
     case "REMOVE_ITEMS":
-      const removedItems = state.items.filter(
-          (item) => item.id !== action.payload.id
-        ),
-        removedTotalAmount =
-          state.totalAmount - action.payload.price * action.payload.amount;
+      const existingRemoveItemsIndex = state.items.findIndex((item) => {
+        return item.id === action.payload;
+      });
+      const existingItems = state.items[existingRemoveItemsIndex];
+      const removedTotalPriceAmount =
+        state.totalPriceAmount - existingItems.price;
+
+      let removedItems;
+
+      if (existingItems.amount === 1) {
+        removedItems = state.items.filter((item) => item.id !== action.payload);
+      } else {
+        let removedItem = {
+          ...existingItems,
+          amount: existingItems.amount - 1,
+        };
+        removedItems = [...state.items];
+        removedItems[existingRemoveItemsIndex] = removedItem;
+      }
+
       return {
         items: removedItems,
-        totalAmount: removedTotalAmount,
+        totalPriceAmount: removedTotalPriceAmount,
       };
     default:
       return defaultCartItems;
@@ -42,14 +80,20 @@ const CartProvider = ({ children }) => {
     dispatchCart({ type: "REMOVE_ITEMS", payload: id });
   };
 
-  console.table(cartState);
-
   const value = {
     items: cartState.items,
-    totalAmount: cartState.totalAmount,
+    totalPriceAmount: cartState.totalPriceAmount,
     addItem: addItemHandler,
     removeItem: removeItemHandler,
   };
+
+  // useEffect(() => {
+  //   const local = localStorage.setItem("cart", JSON.stringify(value));
+
+  //   if()
+  // }, []);
+
+  // const getLocal = localStorage.getItem(JSON.parse("cart"));
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

@@ -7,7 +7,7 @@ const Header = ({ onSetCartModalHeader }) => {
   return (
     <Fragment>
       <header className="fixed top-0 left-0 z-50 flex w-full flex-col items-center gap-y-2 bg-[#8a2b06] py-4 px-12 md:flex-row md:justify-between md:gap-y-0">
-        <h1 className="text-center text-xl font-bold text-white md:text-2xl">
+        <h1 className="bg-gradient-to-r from-indigo-500 to-teal-500 bg-clip-text text-center text-xl font-bold text-transparent md:text-2xl">
           <a href="/">ReactMeals</a>
         </h1>
         <HeaderCartButton onClickCart={onSetCartModalHeader} />

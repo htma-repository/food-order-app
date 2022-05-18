@@ -1,69 +1,66 @@
-import React, { Fragment } from "react";
-import Button from "../UI/Button";
+import React, { Fragment, useContext } from "react";
 
+import Button from "../UI/Button";
 import Modal from "../UI/Modal";
+import CartList from "./CartList";
+import CartContext from "../../store/cart-context";
 
 const Cart = ({ onCartModal, onSetCartModal }) => {
+  const context = useContext(CartContext);
+
+  const totalAmountFixed = `$${context.totalPriceAmount.toFixed(2)}`;
+
   const clickCartHandler = () => {
     onSetCartModal(false);
   };
-  const cartItem = [
-    {
-      id: "m1",
-      name: "Sushi",
-      amount: 2,
-      price: 29.99,
-    },
-    {
-      id: "m2",
-      name: "Barbecue",
-      amount: 3,
-      price: 39.99,
-    },
-  ].map((item) => {
+
+  const orderItemsHandler = () => {
+    return alert("Thanks for your order!");
+  };
+
+  const addAmountItemCartHandler = (item) => {
+    context.addItem({ ...item, amount: 1 });
+  };
+
+  const removeItemCartHandler = (id) => {
+    context.removeItem(id);
+  };
+
+  const cartItem = context.items.map((item) => {
     return (
-      <li
-        className="flex flex-row items-center justify-between border-b border-slate-400"
+      <CartList
         key={item.id}
-      >
-        <div className="flex flex-col justify-start">
-          <h2 className="text-lg font-semibold">{item.name}</h2>
-          <div className="mb-2 flex flex-row items-center justify-center gap-x-6">
-            <span className="text-sm font-semibold text-red-800">
-              ${item.price}
-            </span>
-            <span className="rounded-sm py-0.5 px-2 text-sm ring-1 ring-red-700">
-              {item.amount}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-row gap-x-3">
-          <Button
-            className={
-              "py-0.5 px-3 font-semibold text-[#8a2b06] ring-1 ring-red-700 hover:bg-red-700 hover:text-white"
-            }
-          >
-            -
-          </Button>
-          <Button
-            className={
-              "py-0.5 px-3 font-semibold text-[#8a2b06] ring-1 ring-red-700 hover:bg-red-700 hover:text-white"
-            }
-          >
-            +
-          </Button>
-        </div>
-      </li>
+        id={item.id}
+        name={item.name}
+        price={item.price}
+        amount={item.amount}
+        onAddItem={addAmountItemCartHandler.bind(null, item)}
+        onRemoveItem={removeItemCartHandler.bind(null, item.id)}
+      />
     );
   });
   return (
     <Fragment>
       {onCartModal && (
         <Modal onClickModal={clickCartHandler}>
-          <ul>{cartItem}</ul>
-          <div className="flex flex-row items-center justify-between">
-            <span className="text-xl font-bold">Total Amount</span>
-            <span className="text-lg font-semibold">$89.99</span>
+          <ul className="max-h-80 overflow-scroll py-4 px-6">{cartItem}</ul>
+          <div
+            className={`flex flex-row items-center  ${
+              context.items.length === 0 ? "justify-center" : "justify-between"
+            }`}
+          >
+            {context.items.length === 0 ? (
+              <h1 className="text-lg font-bold uppercase text-red-700">
+                No Items in Cart
+              </h1>
+            ) : (
+              <Fragment>
+                <span className="text-xl font-bold">Total Price</span>
+                <span className="text-lg font-semibold">
+                  {totalAmountFixed}
+                </span>
+              </Fragment>
+            )}
           </div>
           <div className="flex flex-row justify-end gap-x-2">
             <Button
@@ -72,7 +69,12 @@ const Cart = ({ onCartModal, onSetCartModal }) => {
             >
               Close
             </Button>
-            <Button className="bg-[#8a2b06] py-1 px-4 font-semibold text-white hover:bg-[#4d1601]">
+            <Button
+              className={`bg-[#8a2b06] py-1 px-4 font-semibold text-white hover:bg-[#4d1601] ${
+                context.items.length === 0 ? "hidden" : "block"
+              }`}
+              onClick={orderItemsHandler}
+            >
               Order
             </Button>
           </div>
