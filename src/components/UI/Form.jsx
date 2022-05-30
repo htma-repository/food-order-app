@@ -12,6 +12,7 @@ const Form = (props) => {
         onBlur={props.onBlur}
         value={props.value}
         className={props.className}
+        ref={props.refs}
       />
     </Fragment>
   );

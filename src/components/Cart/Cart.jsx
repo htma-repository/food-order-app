@@ -4,6 +4,7 @@ import Button from "../UI/Button";
 import Modal from "../UI/Modal";
 import CartList from "./CartList";
 import CartForm from "./CartForm";
+import CartFormRef from "./CartFormRef";
 import CartContext from "../../store/cart-context";
 
 const Cart = ({ onCartModal, onSetCartModal }) => {
@@ -70,7 +71,8 @@ const Cart = ({ onCartModal, onSetCartModal }) => {
           )}
           {showForm && !itemsZero ? (
             <section className="max-h-60 overflow-y-scroll px-4">
-              <CartForm onShowForm={setShowForm} />
+              {/* <CartForm onShowForm={setShowForm} modalCard={onSetCartModal} /> */}
+              <CartFormRef onShowForm={setShowForm} />
             </section>
           ) : (
             <div className="flex flex-row justify-end gap-x-2">

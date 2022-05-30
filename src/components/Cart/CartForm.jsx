@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
+import axios from "axios";
+import { v4 } from "uuid";
 
 import Form from "../UI/Form";
 import Button from "../UI/Button";
 import useForm from "../hooks/use-form";
+import CartContext from "../../store/cart-context";
 
 const validateInput = (value) => value.trim() !== "";
+const uuidV4 = v4();
 
 const CartForm = (props) => {
+  const context = useContext(CartContext);
   const {
     inputForm: nameInputForm,
     inputIsValid: nameInputIsValid,
@@ -70,6 +75,39 @@ const CartForm = (props) => {
       return;
     }
 
+    const totalPriceAmountToFixed = `${context.totalPriceAmount.toFixed(2)}`;
+
+    const orders = {
+      id: uuidV4,
+      name: nameInputForm,
+      amount: context.items,
+      totalAmount: totalPriceAmountToFixed,
+      address: {
+        street: streetInputForm,
+        postal: postalInputForm,
+        city: cityInputForm,
+      },
+    };
+
+    axios
+      .post(
+        "https://food-order-app-c0891-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json",
+        JSON.stringify(orders)
+      )
+      .then((response) => {
+        console.log(
+          "🚀 ~ file: CartForm.jsx ~ line 98 ~ .then ~ response",
+          response.data,
+          response.status
+        );
+
+        if (response.status === 200) {
+          alert("Orders Accepted");
+          props.modalCard(false);
+        }
+      })
+      .catch((error) => console.log(error.message));
+
     nameReset();
     streetReset();
     postalReset();
@@ -80,56 +118,65 @@ const CartForm = (props) => {
     return invalid && <p className="text-xs text-red-600">{invalidText}</p>;
   };
 
+  const forms = [
+    {
+      id: "name",
+      name: "Name",
+      onChange: nameInputFormHandler,
+      onBlur: nameInputBlurHandler,
+      value: nameInputForm,
+      invalid: nameInputIsInvalid,
+      invalidText: "Name must not be empty!",
+    },
+    {
+      id: "street",
+      name: "Street",
+      onChange: streetInputFormHandler,
+      onBlur: streetInputBlurHandler,
+      value: streetInputForm,
+      invalid: streetInputIsInvalid,
+      invalidText: "Street must not be empty!",
+    },
+    {
+      id: "postal",
+      name: "Postal",
+      onChange: postalInputFormHandler,
+      onBlur: postalInputBlurHandler,
+      value: postalInputForm,
+      invalid: postalInputIsInvalid,
+      invalidText: "Postal must not be empty!",
+    },
+    {
+      id: "city",
+      name: "City",
+      onChange: cityInputFormHandler,
+      onBlur: cityInputBlurHandler,
+      value: cityInputForm,
+      invalid: cityInputIsInvalid,
+      invalidText: "City must not be empty!",
+    },
+  ];
+
+  const allForms = forms.map((form) => {
+    return (
+      <div className="flex flex-col gap-1.5" key={form.id}>
+        <Form
+          children={form.name}
+          id={form.id}
+          type={"text"}
+          onChange={form.onChange}
+          onBlur={form.onBlur}
+          value={form.value}
+          className={"rounded border-none p-1 outline-none ring-1 focus:ring-2"}
+        />
+        {invalidOutput(form.invalid, form.invalidText)}
+      </div>
+    );
+  });
+
   return (
     <form onSubmit={formSubmitHandler}>
-      <div className="flex flex-col gap-1.5">
-        <Form
-          children={"Name"}
-          id={"name"}
-          type={"text"}
-          onChange={nameInputFormHandler}
-          onBlur={nameInputBlurHandler}
-          value={nameInputForm}
-          className={"rounded border-none p-1 outline-none ring-1 focus:ring-2"}
-        />
-        {invalidOutput(nameInputIsInvalid, "Name must not be empty!")}
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Form
-          children={"Street"}
-          id={"street"}
-          type={"text"}
-          onChange={streetInputFormHandler}
-          onBlur={streetInputBlurHandler}
-          value={streetInputForm}
-          className={"rounded border-none p-1 outline-none ring-1 focus:ring-2"}
-        />
-        {invalidOutput(streetInputIsInvalid, "Street must not be empty!")}
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Form
-          children={"Postal"}
-          id={"postal"}
-          type={"text"}
-          onChange={postalInputFormHandler}
-          onBlur={postalInputBlurHandler}
-          value={postalInputForm}
-          className={"rounded border-none p-1 outline-none ring-1 focus:ring-2"}
-        />
-        {invalidOutput(postalInputIsInvalid, "Postal must not be empty!")}
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Form
-          children={"City"}
-          id={"city"}
-          type={"text"}
-          onChange={cityInputFormHandler}
-          onBlur={cityInputBlurHandler}
-          value={cityInputForm}
-          className={"rounded border-none p-1 outline-none ring-1 focus:ring-2"}
-        />
-        {invalidOutput(cityInputIsInvalid, "City must not be empty!")}
-      </div>
+      {allForms}
       <div className="my-4 flex flex-row justify-end gap-x-2">
         <Button
           type={"button"}
