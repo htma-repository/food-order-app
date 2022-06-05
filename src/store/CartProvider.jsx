@@ -64,6 +64,8 @@ const cartReducer = (state, action) => {
         items: removedItems,
         totalPriceAmount: removedTotalPriceAmount,
       };
+    case "CLEAR":
+      return defaultCartItems;
     default:
       return defaultCartItems;
   }
@@ -80,11 +82,16 @@ const CartProvider = ({ children }) => {
     dispatchCart({ type: "REMOVE_ITEMS", payload: id });
   };
 
+  const clearItemHandler = () => {
+    dispatchCart({ type: "CLEAR" });
+  };
+
   const value = {
     items: cartState.items,
     totalPriceAmount: cartState.totalPriceAmount,
     addItem: addItemHandler,
     removeItem: removeItemHandler,
+    clearItem: clearItemHandler,
   };
 
   // useEffect(() => {

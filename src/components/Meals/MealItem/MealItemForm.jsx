@@ -38,11 +38,11 @@ const MealItemForm = ({ id, onAddAmountToCart }) => {
             type: "number",
             min: "1",
             max: "10",
+            defaultValue: "1",
             className: "w-12 rounded-sm p-0.5 ring-1",
           }}
         />
         <Button
-          type={""}
           className={
             "self-end bg-[#8a2b06] py-1 px-4 text-sm text-white hover:bg-[#4d1601] md:self-center"
           }

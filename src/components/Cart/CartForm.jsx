@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import axios from "axios";
 import { v4 } from "uuid";
 
 import Form from "../UI/Form";
@@ -89,24 +88,7 @@ const CartForm = (props) => {
       },
     };
 
-    axios
-      .post(
-        "https://food-order-app-c0891-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json",
-        JSON.stringify(orders)
-      )
-      .then((response) => {
-        console.log(
-          "🚀 ~ file: CartForm.jsx ~ line 98 ~ .then ~ response",
-          response.data,
-          response.status
-        );
-
-        if (response.status === 200) {
-          alert("Orders Accepted");
-          props.modalCard(false);
-        }
-      })
-      .catch((error) => console.log(error.message));
+    props.onOrder(orders);
 
     nameReset();
     streetReset();
@@ -174,30 +156,34 @@ const CartForm = (props) => {
     );
   });
 
+  const buttonForm = (
+    <div className="my-4 flex flex-row justify-end gap-x-2">
+      <Button
+        type={"button"}
+        onClick={cancelOrderHandler}
+        className={
+          "bg-white py-1 px-4 font-semibold text-[#8a2b06] ring-1 ring-[#8a2b06] hover:bg-[#8a2b06] hover:text-white"
+        }
+      >
+        Cancel
+      </Button>
+      <Button
+        disabled={!allFormIsValid}
+        className={`py-1 px-4 font-semibold text-white ${
+          allFormIsValid
+            ? "bg-[#8a2b06] hover:bg-[#4d1601]"
+            : "cursor-not-allowed bg-slate-500"
+        }`}
+      >
+        Confirm
+      </Button>
+    </div>
+  );
+
   return (
     <form onSubmit={formSubmitHandler}>
       {allForms}
-      <div className="my-4 flex flex-row justify-end gap-x-2">
-        <Button
-          type={"button"}
-          onClick={cancelOrderHandler}
-          className={
-            "bg-white py-1 px-4 font-semibold text-[#8a2b06] ring-1 ring-[#8a2b06] hover:bg-[#8a2b06] hover:text-white"
-          }
-        >
-          Cancel
-        </Button>
-        <Button
-          disabled={!allFormIsValid}
-          className={`py-1 px-4 font-semibold text-white ${
-            allFormIsValid
-              ? "bg-[#8a2b06] hover:bg-[#4d1601]"
-              : "cursor-not-allowed bg-slate-500"
-          }`}
-        >
-          Confirm
-        </Button>
-      </div>
+      {buttonForm}
     </form>
   );
 };

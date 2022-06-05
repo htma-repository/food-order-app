@@ -5,7 +5,6 @@ const Form = (props) => {
     <Fragment>
       <label htmlFor={props.id}>{props.children}</label>
       <input
-        placeholder={props.children}
         type={props.type}
         id={props.id}
         onChange={props.onChange}

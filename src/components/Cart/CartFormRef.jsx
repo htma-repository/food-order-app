@@ -1,5 +1,4 @@
 import React, { useContext, useRef, useState } from "react";
-import axios from "axios";
 import { v4 } from "uuid";
 
 import Form from "../UI/Form";
@@ -18,12 +17,12 @@ const CartForm = (props) => {
     postal: true,
     city: true,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const context = useContext(CartContext);
 
   const totalPriceAmountToFixed = `${context.totalPriceAmount.toFixed(2)}`;
 
+  const formInputRef = useRef();
   const enteredNameRef = useRef();
   const enteredStreetRef = useRef();
   const enteredPostalRef = useRef();
@@ -33,7 +32,11 @@ const CartForm = (props) => {
     props.onShowForm(false);
   };
 
-  const formSubmitHandler = async (event) => {
+  const resetForm = () => {
+    return formInputRef.current.reset;
+  };
+
+  const formSubmitHandler = (event) => {
     event.preventDefault();
 
     const enteredName = enteredNameRef.current.value;
@@ -75,28 +78,9 @@ const CartForm = (props) => {
       },
     };
 
-    setIsSubmitting(true);
+    props.onOrder(orders);
 
-    await axios
-      .post(
-        "https://food-order-app-c0891-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json",
-        JSON.stringify(orders)
-      )
-      .then((response) => {
-        console.log(
-          "🚀 ~ file: CartForm.jsx ~ line 98 ~ .then ~ response",
-          response.data,
-          response.status
-        );
-
-        if (response.status === 200) {
-          alert("Orders Accepted");
-          props.modalCard(false);
-        }
-      })
-      .catch((error) => console.log(error.message));
-
-    setIsSubmitting(false);
+    resetForm();
   };
 
   const invalidOutput = (invalid, invalidText) => {
@@ -134,41 +118,45 @@ const CartForm = (props) => {
     },
   ];
 
-  return (
-    <form onSubmit={formSubmitHandler}>
-      {forms.map((form) => {
-        return (
-          <div className="flex flex-col gap-1.5" key={form.id}>
-            <Form
-              children={form.name}
-              id={form.id}
-              type={"text"}
-              className={
-                "rounded border-none p-1 outline-none ring-1 focus:ring-2"
-              }
-              refs={form.refs}
-            />
-            {invalidOutput(form.invalid, form.invalidText)}
-          </div>
-        );
-      })}
-      <div className="my-4 flex flex-row justify-end gap-x-2">
-        <Button
-          type={"button"}
-          onClick={cancelOrderHandler}
-          className={
-            "bg-white py-1 px-4 font-semibold text-[#8a2b06] ring-1 ring-[#8a2b06] hover:bg-[#8a2b06] hover:text-white"
-          }
-        >
-          Cancel
-        </Button>
-        <Button
-          className="bg-[#8a2b06] py-1 px-4 font-semibold text-white
-          hover:bg-[#4d1601]"
-        >
-          Confirm
-        </Button>
+  const allForms = forms.map((form) => {
+    return (
+      <div className="mb-2 flex flex-col gap-1.5" key={form.id}>
+        <Form
+          children={form.name}
+          id={form.id}
+          type={"text"}
+          className={"rounded border-none p-1 outline-none ring-1 focus:ring-2"}
+          refs={form.refs}
+        />
+        {invalidOutput(form.invalid, form.invalidText)}
       </div>
+    );
+  });
+
+  const buttonForm = (
+    <div className="my-4 flex flex-row justify-end gap-x-2">
+      <Button
+        type={"button"}
+        onClick={cancelOrderHandler}
+        className={
+          "bg-white py-1 px-4 font-semibold text-[#8a2b06] ring-1 ring-[#8a2b06] hover:bg-[#8a2b06] hover:text-white"
+        }
+      >
+        Cancel
+      </Button>
+      <Button
+        className="bg-[#8a2b06] py-1 px-4 font-semibold text-white
+          hover:bg-[#4d1601]"
+      >
+        Confirm
+      </Button>
+    </div>
+  );
+
+  return (
+    <form onSubmit={formSubmitHandler} ref={formInputRef}>
+      {allForms}
+      {buttonForm}
     </form>
   );
 };
